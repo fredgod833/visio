@@ -1,0 +1,108 @@
+<div class="register-container">
+  <div class="register-card">
+    <div class="register-header">
+      <h1>💬 Chat Video App</h1>
+      <p>Créez votre compte</p>
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+      <!-- Message de succès -->
+      <div class="success-message" *ngIf="successMessage">
+        <span>✅ {{ successMessage }}</span>
+      </div>
+
+      <!-- Message d'erreur -->
+      <div class="error-message" *ngIf="errorMessage">
+        <span>⚠️ {{ errorMessage }}</span>
+      </div>
+
+      <!-- Champ Username -->
+      <div class="form-group">
+        <label for="username">Nom d'utilisateur</label>
+        <input 
+          id="username"
+          type="text" 
+          formControlName="username"
+          placeholder="Choisissez un nom d'utilisateur"
+          [class.invalid]="username?.invalid && username?.touched">
+        
+        <div class="field-error" *ngIf="username?.invalid && username?.touched">
+          <span *ngIf="username?.errors?.['required']">Le nom d'utilisateur est requis</span>
+          <span *ngIf="username?.errors?.['minlength']">Minimum 3 caractères</span>
+          <span *ngIf="username?.errors?.['maxlength']">Maximum 20 caractères</span>
+        </div>
+      </div>
+
+      <!-- Champ Email -->
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input 
+          id="email"
+          type="email" 
+          formControlName="email"
+          placeholder="votre.email@exemple.com"
+          [class.invalid]="email?.invalid && email?.touched">
+        
+        <div class="field-error" *ngIf="email?.invalid && email?.touched">
+          <span *ngIf="email?.errors?.['required']">L'email est requis</span>
+          <span *ngIf="email?.errors?.['email']">Email invalide</span>
+        </div>
+      </div>
+
+      <!-- Champ Password -->
+      <div class="form-group">
+        <label for="password">Mot de passe</label>
+        <input 
+          id="password"
+          type="password" 
+          formControlName="password"
+          placeholder="Créez un mot de passe sécurisé"
+          [class.invalid]="password?.invalid && password?.touched">
+        
+        <div class="field-error" *ngIf="password?.invalid && password?.touched">
+          <span *ngIf="password?.errors?.['required']">Le mot de passe est requis</span>
+          <span *ngIf="password?.errors?.['minlength']">Minimum 7 caractères requis</span>
+        </div>
+        
+        <div class="password-hint">
+          <small>
+            Le mot de passe doit contenir : au moins 7 caractères, une majuscule, 
+            une minuscule, un chiffre et un caractère spécial (#?!@$%^&*-:)
+          </small>
+        </div>
+      </div>
+
+      <!-- Champ Confirm Password -->
+      <div class="form-group">
+        <label for="confirmPassword">Confirmer le mot de passe</label>
+        <input 
+          id="confirmPassword"
+          type="password" 
+          formControlName="confirmPassword"
+          placeholder="Confirmez votre mot de passe"
+          [class.invalid]="confirmPassword?.invalid && confirmPassword?.touched">
+        
+        <div class="field-error" *ngIf="confirmPassword?.invalid && confirmPassword?.touched">
+          <span *ngIf="confirmPassword?.errors?.['required']">Veuillez confirmer le mot de passe</span>
+          <span *ngIf="confirmPassword?.errors?.['passwordMismatch']">Les mots de passe ne correspondent pas</span>
+        </div>
+      </div>
+
+      <!-- Bouton d'inscription -->
+      <button 
+        type="submit" 
+        class="btn-register"
+        [disabled]="loading || registerForm.invalid">
+        <span *ngIf="!loading">S'inscrire</span>
+        <span *ngIf="loading">Inscription en cours...</span>
+      </button>
+
+      <!-- Lien vers connexion -->
+      <div class="login-link">
+        <p>Déjà un compte ? 
+          <a (click)="goToLogin()">Se connecter</a>
+        </p>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,108 @@
+<div class="chat-container">
+  <!-- Zone de Chat -->
+  <div class="chat-section" [class.minimized]="isVideoCallActive">
+    <div class="chat-header">
+      <h2>Chat - {{ roomId }}</h2>
+      <span class="status" [class.connected]="isConnected">
+        {{ isConnected ? 'Connecté' : 'Déconnecté' }}
+      </span>
+    </div>
+
+    <div class="messages-container" #messagesContainer>
+        @for (message of messages; track message.id) {
+            <div    [class.own-message]="message.sender === username"
+                    [class.system-message]="message.type !== 'CHAT'"
+                    class="message">
+                <div class="message-sender">{{ message.sender }}</div>
+                <div class="message-content">{{ message.content }}</div>
+                <div class="message-time">
+                    {{ message.timestamp | date:'short' }}
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="input-container">
+      <input 
+        type="text" 
+        [(ngModel)]="newMessage"
+        (keyup.enter)="sendMessage()"
+        placeholder="Tapez votre message..."
+        [disabled]="!isConnected">
+      
+      <button (click)="sendMessage()" [disabled]="!isConnected">
+        Envoyer
+      </button>
+      
+      <button 
+        (click)="startVideoCall('otherUser')" 
+        [disabled]="!isConnected || isVideoCallActive"
+        class="video-btn">
+        📹 Appel Vidéo
+      </button>
+    </div>
+  </div>
+
+  <!-- Zone Vidéo -->
+@if (isVideoCallActive){
+
+  <div class="video-section">
+    <div class="video-header">
+      <h3>Appel vidéo avec {{ remotePeerUsername }}</h3>
+      <button (click)="endCall()" class="end-call-btn">
+        Terminer l'appel
+      </button>
+    </div>
+
+    <div class="video-container">
+      <div class="remote-video-wrapper">
+        <video #remoteVideo autoplay playsinline></video>
+        <span class="video-label">{{ remotePeerUsername }}</span>
+      </div>
+
+      <div class="local-video-wrapper">
+        <video #localVideo autoplay playsinline muted></video>
+        <span class="video-label">Vous</span>
+      </div>
+    </div>
+
+    <div class="video-controls">
+      <button 
+        (click)="toggleAudio()" 
+        [class.disabled]="!isAudioEnabled">
+        {{ isAudioEnabled ? '🎤' : '🔇' }}
+      </button>
+      
+      <button 
+        (click)="toggleVideo()" 
+        [class.disabled]="!isVideoEnabled">
+        {{ isVideoEnabled ? '📹' : '📵' }}
+      </button>
+      
+      <button (click)="endCall()" class="end-btn">
+        ❌ Raccrocher
+      </button>
+    </div>
+  </div>
+
+@if (showVideoCallDialog) {
+    <!-- Dialog Appel Entrant -->
+    <div class="call-dialog" >
+        <div class="dialog-content">
+            <h3>Appel vidéo entrant</h3>
+            <p>{{ incomingCallFrom }} vous appelle</p>
+            <div class="dialog-buttons">
+                <button (click)="acceptCall()" class="accept-btn">
+                    ✅ Accepter
+                </button>
+                <button (click)="rejectCall()" class="reject-btn">
+                    ❌ Refuser
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+
+}
+</div>

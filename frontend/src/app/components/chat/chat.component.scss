@@ -1,0 +1,313 @@
+.chat-container {
+  display: flex;
+  height: 100vh;
+  background: #f5f5f5;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Section Chat */
+.chat-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-right: 1px solid #ddd;
+  transition: all 0.3s ease;
+}
+
+.chat-section.minimized {
+  flex: 0.3;
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: #4a90e2;
+  color: white;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.chat-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.status {
+  padding: 5px 15px;
+  border-radius: 20px;
+  background: #ff6b6b;
+  font-size: 0.9rem;
+}
+
+.status.connected {
+  background: #51cf66;
+}
+
+.messages-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.message {
+  max-width: 70%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: #e3f2fd;
+  align-self: flex-start;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.message.own-message {
+  align-self: flex-end;
+  background: #4a90e2;
+  color: white;
+}
+
+.message.system-message {
+  align-self: center;
+  background: #ffe0b2;
+  font-style: italic;
+  max-width: 90%;
+  text-align: center;
+}
+
+.message-sender {
+  font-weight: bold;
+  font-size: 0.85rem;
+  margin-bottom: 5px;
+  opacity: 0.8;
+}
+
+.message-content {
+  word-wrap: break-word;
+  line-height: 1.4;
+}
+
+.message-time {
+  font-size: 0.75rem;
+  margin-top: 5px;
+  opacity: 0.6;
+}
+
+.input-container {
+  display: flex;
+  gap: 10px;
+  padding: 20px;
+  background: white;
+  border-top: 1px solid #ddd;
+}
+
+.input-container input {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 25px;
+  font-size: 1rem;
+  outline: none;
+}
+
+.input-container input:focus {
+  border-color: #4a90e2;
+}
+
+.input-container button {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 25px;
+  background: #4a90e2;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.3s;
+}
+
+.input-container button:hover:not(:disabled) {
+  background: #357abd;
+}
+
+.input-container button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.video-btn {
+  background: #51cf66 !important;
+}
+
+/* Section Vidéo */
+.video-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #1a1a1a;
+}
+
+.video-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: #2c2c2c;
+  color: white;
+}
+
+.video-header h3 {
+  margin: 0;
+}
+
+.end-call-btn {
+  padding: 8px 20px;
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.video-container {
+  flex: 1;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.remote-video-wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.remote-video-wrapper video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.local-video-wrapper {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 250px;
+  height: 180px;
+  border: 3px solid white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.local-video-wrapper video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-label {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(0,0,0,0.7);
+  color: white;
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-size: 0.9rem;
+}
+
+.video-controls {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  padding: 20px;
+  background: #2c2c2c;
+}
+
+.video-controls button {
+  width: 60px;
+  height: 60px;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  background: #4a90e2;
+  transition: all 0.3s;
+}
+
+.video-controls button:hover {
+  transform: scale(1.1);
+}
+
+.video-controls button.disabled {
+  background: #666;
+}
+
+.video-controls .end-btn {
+  background: #ff6b6b;
+  width: auto;
+  padding: 0 25px;
+  border-radius: 30px;
+}
+
+/* Dialog Appel */
+.call-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.dialog-content {
+  background: white;
+  padding: 40px;
+  border-radius: 15px;
+  text-align: center;
+  min-width: 350px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.dialog-content h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.dialog-buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 25px;
+  justify-content: center;
+}
+
+.accept-btn, .reject-btn {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 25px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.accept-btn {
+  background: #51cf66;
+  color: white;
+}
+
+.reject-btn {
+  background: #ff6b6b;
+  color: white;
+}
+
+.accept-btn:hover, .reject-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}

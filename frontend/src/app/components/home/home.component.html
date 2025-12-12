@@ -1,0 +1,43 @@
+<div class="home-container">
+  <div class="home-content">
+    <!-- Hero Section -->
+    <div class="hero-section">
+      <div class="logo">💬</div>
+      <h1 class="title">Chat Video App</h1>
+      <p class="subtitle">Communiquez en temps réel avec vos proches</p>
+      
+      <div class="features">
+        <div class="feature">
+          <span class="feature-icon">💬</span>
+          <h3>Chat Instantané</h3>
+          <p>Messages en temps réel</p>
+        </div>
+        <div class="feature">
+          <span class="feature-icon">📹</span>
+          <h3>Visioconférence</h3>
+          <p>Appels vidéo HD</p>
+        </div>
+        <div class="feature">
+          <span class="feature-icon">🔒</span>
+          <h3>Sécurisé</h3>
+          <p>Chiffrement JWT</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button class="btn-primary" (click)="goToLogin()">
+        Se connecter
+      </button>
+      <button class="btn-secondary" (click)="goToRegister()">
+        Créer un compte
+      </button>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>Déjà membre ? <a (click)="goToLogin()">Connectez-vous ici</a></p>
+    </div>
+  </div>
+</div>
