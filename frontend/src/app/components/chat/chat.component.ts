@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, signal, NgZone } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -19,12 +19,16 @@ export class ChatComponent implements OnInit, OnDestroy {
   @ViewChild('remoteVideo') remoteVideo!: ElementRef<HTMLVideoElement>;
   @ViewChild('messagesContainer') messagesContainer!: ElementRef;
 
-  messages: ChatMessage[] = [];
+  // ✅ Transformer messages en Signal aussi
+  messages = signal<ChatMessage[]>([]);
   newMessage: string = '';
   username: string = '';
+  otherUser: string = '';
   roomId: string = 'general';
 
-  isConnected: boolean = false;
+  // ✅ SOLUTION: Utiliser un Signal au lieu d'une simple variable
+  isConnected = signal(false);
+
   isVideoCallActive: boolean = false;
   isAudioEnabled: boolean = true;
   isVideoEnabled: boolean = true;
@@ -39,7 +43,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     private wsService: WebSocketService,
     private webRTCService: WebRTCService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private ngZone: NgZone  // ✅ Ajouter NgZone
   ) {}
 
   ngOnInit(): void {
@@ -54,23 +59,26 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.username = currentUser.username;
     console.log('Chat initialisé pour:', this.username);
 
-    // Se connecter au WebSocket avec le token
-    this.wsService.connect(this.username);
-
-    // S'abonner aux messages
+    // ✅ S'abonner aux messages avec Signal
     this.subscriptions.push(
       this.wsService.messages$.subscribe(messages => {
-        this.messages = messages;
+        console.log('📨 Nouveaux messages reçus:', messages.length);
+        this.messages.set(messages);  // ✅ Utiliser .set() pour le Signal
         this.scrollToBottom();
       })
     );
 
-    // S'abonner à l'état de connexion
+    // ✅ S'abonner à l'état de connexion avec Signal
     this.subscriptions.push(
       this.wsService.connected$.subscribe(connected => {
-        this.isConnected = connected;
+        console.log('🔄 Changement status WebSocket:', connected);
+        this.isConnected.set(connected);  // ✅ Utiliser .set() pour mettre à jour le Signal
+        console.log('✅ Signal mis à jour:', this.isConnected());
       })
     );
+
+    // Se connecter au WebSocket APRÈS les souscriptions
+    this.wsService.connect(this.username);
 
     // Écouter les appels entrants
     window.addEventListener('incomingCall', this.handleIncomingCall.bind(this));
@@ -78,6 +86,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     // Écouter le stream distant
     window.addEventListener('remoteStream', this.handleRemoteStream.bind(this));
   }
+
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(sub => sub.unsubscribe());
@@ -88,7 +97,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   sendMessage(): void {
-    if (this.newMessage.trim() && this.isConnected) {
+    // ✅ Utiliser .() pour lire un Signal
+    if (this.newMessage.trim() && this.isConnected()) {
       const message: ChatMessage = {
         content: this.newMessage,
         sender: this.username,
@@ -102,44 +112,78 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
   }
 
-  async startVideoCall(targetUsername: string): Promise<void> {
-    this.remotePeerUsername = targetUsername;
+  setOther(targetUsername : string): void {
+    this.otherUser = targetUsername;
+  }
+
+  async startVideoCall(): Promise<void> {
+    this.remotePeerUsername = this.otherUser;
+
+    // ✅ CORRECTION: Activer la vidéo AVANT d'accéder aux éléments
     this.isVideoCallActive = true;
 
     try {
-      // Démarrer le stream local
+      // ✅ Attendre que Angular rende les éléments vidéo
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      console.log('🎬 Démarrage appel vidéo avec', this.otherUser);
+
+      // Démarrer le stream local (maintenant les éléments existent)
       await this.webRTCService.startLocalStream(
         this.localVideo.nativeElement
       );
 
       // Initier l'appel
-      this.wsService.initiateCall(targetUsername, this.roomId);
+      this.wsService.initiateCall(this.otherUser, this.roomId);
 
       // Créer l'offre WebRTC
-      await this.webRTCService.initiateCall(targetUsername);
-    } catch (error) {
-      console.error('Erreur démarrage appel vidéo:', error);
+      await this.webRTCService.initiateCall(this.otherUser);
+
+      console.log('✅ Appel vidéo démarré avec succès');
+    } catch (error: any) {
+      console.error('❌ Erreur démarrage appel vidéo:', error);
+
+      // ✅ Afficher un message d'erreur à l'utilisateur
+      alert(error.message || 'Impossible de démarrer l\'appel vidéo. Vérifiez vos permissions caméra/micro.');
+
       this.isVideoCallActive = false;
     }
   }
 
   async handleIncomingCall(event: any): Promise<void> {
-    const { from } = event.detail;
-    this.incomingCallFrom = from;
-    this.showVideoCallDialog = true;
+    // ✅ CORRECTION: Exécuter dans la zone Angular pour forcer le rafraîchissement
+    this.ngZone.run(() => {
+      const { from } = event.detail;
+      this.incomingCallFrom = from;
+      this.showVideoCallDialog = true;
+      console.log('📞 Appel entrant de', from);
+    });
   }
 
   async acceptCall(): Promise<void> {
     this.showVideoCallDialog = false;
     this.remotePeerUsername = this.incomingCallFrom;
+
+    // ✅ CORRECTION: Activer la vidéo AVANT d'accéder aux éléments
     this.isVideoCallActive = true;
 
     try {
+      // ✅ Attendre que Angular rende les éléments vidéo
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      console.log('📞 Acceptation appel de', this.incomingCallFrom);
+
       await this.webRTCService.startLocalStream(
         this.localVideo.nativeElement
       );
-    } catch (error) {
-      console.error('Erreur acceptation appel:', error);
+
+      console.log('✅ Appel accepté avec succès');
+    } catch (error: any) {
+      console.error('❌ Erreur acceptation appel:', error);
+
+      // ✅ Afficher un message d'erreur
+      alert(error.message || 'Impossible d\'accepter l\'appel. Vérifiez vos permissions caméra/micro.');
+
       this.isVideoCallActive = false;
     }
   }
@@ -150,8 +194,12 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   handleRemoteStream(event: any): void {
-    const stream = event.detail;
-    this.remoteVideo.nativeElement.srcObject = stream;
+    // ✅ CORRECTION: Exécuter dans la zone Angular
+    this.ngZone.run(() => {
+      const stream = event.detail;
+      this.remoteVideo.nativeElement.srcObject = stream;
+      console.log('📹 Stream distant reçu');
+    });
   }
 
   endCall(): void {

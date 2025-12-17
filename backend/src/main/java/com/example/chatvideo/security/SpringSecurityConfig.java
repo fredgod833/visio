@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
@@ -45,6 +46,7 @@ public class SpringSecurityConfig {
         // Disable csrf
         return http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         //.requestMatchers(HttpMethod.GET, "/api").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
@@ -78,7 +80,10 @@ public class SpringSecurityConfig {
 
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("http://localhost:4200"));
+        config.setAllowedOrigins(Arrays.asList(
+                "http://192.168.1.22:4200", "http://localhost:4200", "http://titan.local:4200",   // HTTP (pour développement)
+                "https://192.168.1.22:4200", "https://localhost:4200", "https://titan.local:4200"  // HTTPS
+        ));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setExposedHeaders(Arrays.asList("Authorization", "Bearer", "Content-Type"));
@@ -86,6 +91,24 @@ public class SpringSecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList(
+                "http://192.168.1.22:4200", "http://localhost:4200", "http://titan.local:4200",   // HTTP (pour développement)
+                "https://192.168.1.22:4200", "https://localhost:4200", "https://titan.local:4200"  // HTTPS
+        ));
+
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
     }
 
 }

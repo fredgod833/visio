@@ -1,26 +1,28 @@
 <div class="login-container">
   <div class="login-card">
     <div class="login-header">
-      <h1>💬 Chat Video App</h1>
+      <h1>💬 Your Car Your Support</h1>
       <p>Connectez-vous pour commencer</p>
     </div>
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
       <!-- Message d'erreur -->
-      <div class="error-message" *ngIf="errorMessage">
-        <span>⚠️ {{ errorMessage }}</span>
-      </div>
+      @if (errorMessage$ | async; as errorMessage) {
+        <div class="error-message">
+          <span>⚠️ {{ errorMessage }}</span>
+        </div>
+      }
 
       <!-- Champ Username -->
       <div class="form-group">
         <label for="username">Nom d'utilisateur</label>
-        <input 
+        <input
           id="username"
-          type="text" 
+          type="text"
           formControlName="username"
           placeholder="Entrez votre nom d'utilisateur"
           [class.invalid]="username?.invalid && username?.touched">
-        
+
         <div class="field-error" *ngIf="username?.invalid && username?.touched">
           <span *ngIf="username?.errors?.['required']">Le nom d'utilisateur est requis</span>
           <span *ngIf="username?.errors?.['minlength']">Minimum 3 caractères</span>
@@ -30,22 +32,29 @@
       <!-- Champ Password -->
       <div class="form-group">
         <label for="password">Mot de passe</label>
-        <input 
+        <input
           id="password"
-          type="password" 
+          type="password"
           formControlName="password"
           placeholder="Entrez votre mot de passe"
           [class.invalid]="password?.invalid && password?.touched">
-        
-        <div class="field-error" *ngIf="password?.invalid && password?.touched">
-          <span *ngIf="password?.errors?.['required']">Le mot de passe est requis</span>
-          <span *ngIf="password?.errors?.['minlength']">Minimum 6 caractères</span>
+
+    @if (password?.invalid && password?.touched) {
+        <div class="field-error">
+          @if (password?.errors?.['required']){
+            Le mot de passe est requis.
+          }
+
+          @if (password?.errors?.['minlength']) {
+            Le mot de passe minimal est de 6 caractères.
+          }
         </div>
+    }
       </div>
 
       <!-- Bouton de connexion -->
-      <button 
-        type="submit" 
+      <button
+        type="submit"
         class="btn-login"
         [disabled]="loading || loginForm.invalid">
         <span *ngIf="!loading">Se connecter</span>
@@ -54,7 +63,7 @@
 
       <!-- Lien vers inscription -->
       <div class="register-link">
-        <p>Pas encore de compte ? 
+        <p>Pas encore de compte ?
           <a (click)="goToRegister()">S'inscrire</a>
         </p>
       </div>

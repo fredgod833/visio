@@ -140,6 +140,20 @@
   background: #51cf66 !important;
 }
 
+.video-btn:hover:not(:disabled) {
+  background: #40c057 !important;
+}
+
+/* ✅ Style du bouton déconnexion */
+.logout-btn {
+  background: #ff6b6b !important;
+  white-space: nowrap;
+}
+
+.logout-btn:hover {
+  background: #ff5252 !important;
+}
+
 /* Section Vidéo */
 .video-section {
   flex: 1;

@@ -27,6 +27,7 @@ public class ChatController {
     @SendTo("/topic/messages")
     public ChatMessageDTO sendMessage(@Payload ChatMessageDTO message, Principal principal) {
         message.setSender(principal.getName());
+        message.setRoomId(message.getRoomId());
         return chatService.saveAndBroadcastMessage(message);
     }
 
@@ -38,6 +39,7 @@ public class ChatController {
     public ChatMessageDTO joinChat(@Payload ChatMessageDTO message,
                                     SimpMessageHeaderAccessor headerAccessor) {
         headerAccessor.getSessionAttributes().put("username", message.getSender());
+        message.setRoomId(message.getRoomId());
         message.setType("JOIN");
         return message;
     }

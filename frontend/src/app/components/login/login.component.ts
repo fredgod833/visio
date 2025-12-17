@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/AuthService';
+import { BehaviorSubject, Observable } from 'rxjs';
+import {ChatMessage} from '../../services/WebSocketService';
 
 @Component({
   selector: 'app-login',
@@ -12,9 +14,12 @@ import { AuthService } from '../../services/AuthService';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
+
+  private errorMessageSubject = new BehaviorSubject<String>("");
+  public errorMessage$ = this.errorMessageSubject.asObservable();
+
   loginForm: FormGroup;
   loading = false;
-  errorMessage = '';
   returnUrl = '/chat';
 
   constructor(
@@ -48,8 +53,8 @@ export class LoginComponent implements OnInit {
       return;
     }
 
+    this.errorMessageSubject.next("");
     this.loading = true;
-    this.errorMessage = '';
 
     this.authService.login(this.loginForm.value).subscribe({
       next: () => {
@@ -57,8 +62,9 @@ export class LoginComponent implements OnInit {
       },
       error: (error) => {
         this.loading = false;
-        this.errorMessage = error.error?.message || 'Identifiants incorrects';
-        console.error('Erreur de connexion:', error);
+        let errorMessage = error.error?.message || 'Identifiants incorrects';
+        console.log(errorMessage);
+        this.errorMessageSubject.next(errorMessage);
       }
     });
   }

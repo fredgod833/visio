@@ -3,17 +3,20 @@
   <div class="chat-section" [class.minimized]="isVideoCallActive">
     <div class="chat-header">
       <h2>Chat - {{ roomId }}</h2>
-      <span class="status" [class.connected]="isConnected">
-        {{ isConnected ? 'Connecté' : 'Déconnecté' }}
+      <!-- ✅ Utiliser isConnected() avec des parenthèses pour lire le Signal -->
+      <span class="status" [class.connected]="isConnected()">
+        {{ isConnected() ? 'Connecté ✅' : 'Déconnecté ❌' }}
+        <small style="font-size: 0.7em;">({{ isConnected() }})</small>
       </span>
     </div>
 
     <div class="messages-container" #messagesContainer>
-        @for (message of messages; track message.id) {
+        <!-- ✅ Utiliser messages() avec parenthèses pour lire le Signal -->
+        @for (message of messages(); track message.id) {
             <div    [class.own-message]="message.sender === username"
                     [class.system-message]="message.type !== 'CHAT'"
                     class="message">
-                <div class="message-sender">{{ message.sender }}</div>
+                <div class="message-sender" (click)="setOther(message.sender)">{{ message.sender }}</div>
                 <div class="message-content">{{ message.content }}</div>
                 <div class="message-time">
                     {{ message.timestamp | date:'short' }}
@@ -23,22 +26,28 @@
     </div>
 
     <div class="input-container">
-      <input 
-        type="text" 
+      <input
+        type="text"
         [(ngModel)]="newMessage"
         (keyup.enter)="sendMessage()"
         placeholder="Tapez votre message..."
-        [disabled]="!isConnected">
-      
-      <button (click)="sendMessage()" [disabled]="!isConnected">
+        [disabled]="!isConnected()">
+
+      <button (click)="sendMessage()" [disabled]="!isConnected()">
         Envoyer
       </button>
-      
-      <button 
-        (click)="startVideoCall('otherUser')" 
-        [disabled]="!isConnected || isVideoCallActive"
+
+      <button
+        (click)="startVideoCall()"
+        [disabled]="!isConnected() || isVideoCallActive"
         class="video-btn">
         📹 Appel Vidéo
+      </button>
+
+      <button
+        (click)="logout()"
+        class="logout-btn">
+        🚪 Déconnexion
       </button>
     </div>
   </div>
@@ -67,23 +76,25 @@
     </div>
 
     <div class="video-controls">
-      <button 
-        (click)="toggleAudio()" 
+      <button
+        (click)="toggleAudio()"
         [class.disabled]="!isAudioEnabled">
         {{ isAudioEnabled ? '🎤' : '🔇' }}
       </button>
-      
-      <button 
-        (click)="toggleVideo()" 
+
+      <button
+        (click)="toggleVideo()"
         [class.disabled]="!isVideoEnabled">
         {{ isVideoEnabled ? '📹' : '📵' }}
       </button>
-      
+
       <button (click)="endCall()" class="end-btn">
         ❌ Raccrocher
       </button>
     </div>
   </div>
+
+}
 
 @if (showVideoCallDialog) {
     <!-- Dialog Appel Entrant -->
@@ -103,6 +114,4 @@
     </div>
 }
 
-
-}
 </div>
