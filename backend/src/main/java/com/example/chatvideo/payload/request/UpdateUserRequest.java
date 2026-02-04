@@ -13,7 +13,10 @@ public class UpdateUserRequest {
     private String email;
 
     @Size(max = 30)
-    private String username;
+    private String firstName;
+
+    @Size(max = 30)
+    private String lastName;
 
     @NotBlank
     @Size(min = 1, max = 40)

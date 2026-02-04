@@ -1,8 +1,8 @@
 Bag Attributes
     friendlyName: fgodard
-    localKeyID: 54 69 6D 65 20 31 37 36 35 37 32 32 31 38 38 32 36 34
-subject=C = FR, ST = Nord, L = Lille, O = fgodard, OU = Dev, CN = 192.168.1.144
-issuer=C = FR, ST = Nord, L = Lille, O = fgodard, OU = Dev, CN = 192.168.1.144
+    localKeyID: 54 69 6D 65 20 31 37 36 35 37 32 32 31 38 38 32 36 34 
+subject=C = FR, ST = Nord, L = Lille, O = fgodard, OU = Dev, CN = localhost
+issuer=C = FR, ST = Nord, L = Lille, O = fgodard, OU = Dev, CN = localhost
 -----BEGIN CERTIFICATE-----
 MIIDjDCCAnSgAwIBAgIIYiObjVgzjWMwDQYJKoZIhvcNAQEMBQAwYDELMAkGA1UE
 BhMCRlIxDTALBgNVBAgTBE5vcmQxDjAMBgNVBAcTBUxpbGxlMRAwDgYDVQQKEwdm

@@ -11,10 +11,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class ChatMessageDTO {
-    private Long id;
+    private Integer id;
     private String sender;
     private String content;
-    private String roomId;
+    private Integer agencyId;
+    private Integer customerId;
     private String type; // CHAT, JOIN, LEAVE
     private LocalDateTime timestamp;
 }

@@ -65,10 +65,10 @@ public class WebSocketSecurityConfig implements WebSocketMessageBrokerConfigurer
 
                         // Lire le JWT et extraire les informations utilisateur
                         Jwt jwt = jwtService.readJwt(token);
-                        String username = jwt.getSubject();
+                        String email = jwt.getSubject();
 
                         // Charger les détails de l'utilisateur
-                        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
                         // Créer l'authentification
                         UsernamePasswordAuthenticationToken authentication =
@@ -81,7 +81,7 @@ public class WebSocketSecurityConfig implements WebSocketMessageBrokerConfigurer
                         // Associer l'utilisateur authentifié à la session WebSocket
                         accessor.setUser(authentication);
 
-                        log.info("WebSocket connection authenticated for user: {}", username);
+                        log.info("WebSocket connection authenticated for user: {}", email);
 
                     } catch (Exception e) {
                         log.error("WebSocket authentication failed: {}", e.getMessage());

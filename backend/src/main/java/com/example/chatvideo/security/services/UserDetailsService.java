@@ -19,8 +19,8 @@ public class UserDetailsService implements org.springframework.security.core.use
     private UserRepository usersRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserEntity entity = usersRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(String.format("utilisateur %s inconnu.", username)));
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        UserEntity entity = usersRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(String.format("utilisateur %s inconnu.", email)));
         return user2UserDetails(entity);
     }
 
@@ -29,7 +29,9 @@ public class UserDetailsService implements org.springframework.security.core.use
         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         return new UserDetailsImpl(
                 userEntity.getId(),
-                userEntity.getUsername(),
+                userEntity.getFirstName(),
+                userEntity.getLastName(),
+                userEntity.getEmail(),
                 userEntity.getEmail(),
                 userEntity.getPassword(),
                 authorities);

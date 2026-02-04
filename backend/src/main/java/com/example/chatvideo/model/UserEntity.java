@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "users")
+@Table(name = "USER", schema = "YOUR_CAR_YOUR_WAY", catalog = "")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,10 +15,13 @@ import lombok.NoArgsConstructor;
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    @Column(unique = true, nullable = false)
-    private String username;
+    private int id;
+
+    @Column(nullable = false)
+    private String firstName;
+
+    @Column(nullable = false)
+    private String lastName;
     
     @Column(nullable = false)
     private String password;
@@ -28,6 +31,9 @@ public class UserEntity {
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    private UserStatus status = UserStatus.OFFLINE;
+    private UserType type = UserType.CUSTOMER;
 
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private UserStatus status = UserStatus.OFFLINE;
 }

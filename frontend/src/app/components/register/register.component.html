@@ -16,20 +16,37 @@
         <span>⚠️ {{ errorMessage }}</span>
       </div>
 
-      <!-- Champ Username -->
+      <!-- Champ FirstName -->
       <div class="form-group">
-        <label for="username">Nom d'utilisateur</label>
+        <label for="firstName">Prénom</label>
         <input
-          id="username"
+          id="firstName"
           type="text"
-          formControlName="username"
+          formControlName="firstName"
           placeholder="Choisissez un nom d'utilisateur"
-          [class.invalid]="username?.invalid && username?.touched">
+          [class.invalid]="firstName?.invalid && firstName?.touched">
 
-        <div class="field-error" *ngIf="username?.invalid && username?.touched">
-          <span *ngIf="username?.errors?.['required']">Le nom d'utilisateur est requis</span>
-          <span *ngIf="username?.errors?.['minlength']">Minimum 3 caractères</span>
-          <span *ngIf="username?.errors?.['maxlength']">Maximum 20 caractères</span>
+        <div class="field-error" *ngIf="firstName?.invalid && firstName?.touched">
+          <span *ngIf="firstName?.errors?.['required']">Le nom d'utilisateur est requis</span>
+          <span *ngIf="firstName?.errors?.['minlength']">Minimum 3 caractères</span>
+          <span *ngIf="firstName?.errors?.['maxlength']">Maximum 20 caractères</span>
+        </div>
+      </div>
+
+      <!-- Champ lastName -->
+      <div class="form-group">
+        <label for="lastName">Nom</label>
+        <input
+          id="lastName"
+          type="text"
+          formControlName="lastName"
+          placeholder="Choisissez un nom d'utilisateur"
+          [class.invalid]="lastName?.invalid && lastName?.touched">
+
+        <div class="field-error" *ngIf="lastName?.invalid && lastName?.touched">
+          <span *ngIf="lastName?.errors?.['required']">Le nom d'utilisateur est requis</span>
+          <span *ngIf="lastName?.errors?.['minlength']">Minimum 3 caractères</span>
+          <span *ngIf="lastName?.errors?.['maxlength']">Maximum 20 caractères</span>
         </div>
       </div>
 

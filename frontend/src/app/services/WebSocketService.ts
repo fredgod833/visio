@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Client, IMessage } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 export interface ChatMessage {
   id?: number;
-  content: string;
   sender: string;
-  roomId: string;
+  content: string;
+  agencyId: number;
+  customerId: number;
   type: string;
   timestamp?: Date;
 }
@@ -40,7 +41,7 @@ export class WebSocketService {
     console.log('Token présent:', token.substring(0, 20) + '...');
 
     this.client.webSocketFactory = () => {
-      return new SockJS('https://192.168.1.22:8443/ws');
+      return new SockJS('https://192.168.1.144:8443/ws');
     };
 
     this.client.connectHeaders = {
@@ -89,9 +90,10 @@ export class WebSocketService {
 
       // Envoyer notification de connexion
       this.sendMessage({
-        content: `${username} a rejoint le chat`,
         sender: username,
-        roomId: 'general',
+        content: `${username} a rejoint le chat`,
+        agencyId: 1,
+        customerId: 1,
         type: 'JOIN'
       });
     };

@@ -57,6 +57,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
 
     this.username = currentUser.username;
+    this.roomId = currentUser.username;
     console.log('Chat initialisé pour:', this.username);
 
     // ✅ S'abonner aux messages avec Signal
@@ -99,10 +100,18 @@ export class ChatComponent implements OnInit, OnDestroy {
   sendMessage(): void {
     // ✅ Utiliser .() pour lire un Signal
     if (this.newMessage.trim() && this.isConnected()) {
-      const message: ChatMessage = {
-        content: this.newMessage,
+      const message: {
+        sender: string;
+        customerId: number;
+        agencyId: number;
+        type: string;
+        content: string;
+        timestamp: Date
+      } = {
         sender: this.username,
-        roomId: this.roomId,
+        content: this.newMessage,
+        agencyId:1,
+        customerId:1,
         type: 'CHAT',
         timestamp: new Date()
       };

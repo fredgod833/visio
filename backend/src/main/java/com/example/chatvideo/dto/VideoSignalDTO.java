@@ -14,6 +14,6 @@ public class VideoSignalDTO {
     private String type; // OFFER, ANSWER, ICE_CANDIDATE, CALL_REQUEST
     private String from;
     private String to;
-    private String roomId;
+    private String roomId = "Assistance";
     private Object signal; // SDP ou ICE candidate
 }

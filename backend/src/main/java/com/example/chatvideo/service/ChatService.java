@@ -1,13 +1,12 @@
 package com.example.chatvideo.service;
 
 import com.example.chatvideo.dto.ChatMessageDTO;
+import com.example.chatvideo.exceptions.InvalidAgencyException;
 import com.example.chatvideo.exceptions.InvalidUserException;
-import com.example.chatvideo.model.ChatMessage;
-import com.example.chatvideo.model.ChatRoom;
-import com.example.chatvideo.model.MessageType;
-import com.example.chatvideo.model.UserEntity;
+import com.example.chatvideo.model.*;
+import com.example.chatvideo.repository.AgencyRepository;
 import com.example.chatvideo.repository.ChatMessageRepository;
-import com.example.chatvideo.repository.ChatRoomRepository;
+import com.example.chatvideo.repository.CustomerRepository;
 import com.example.chatvideo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,28 +23,29 @@ import java.util.stream.Collectors;
 public class ChatService {
 
     private final ChatMessageRepository messageRepository;
-    private final ChatRoomRepository roomRepository;
     private final UserRepository userRepository;
+    private final AgencyRepository agencyRepository;
+    private final CustomerRepository customerRepository;
+
 
     @Transactional
     public ChatMessageDTO saveAndBroadcastMessage(ChatMessageDTO messageDTO) {
 
         try {
-            UserEntity sender = userRepository.findByUsername(messageDTO.getSender()).orElseThrow(() -> new InvalidUserException("Utilisateur inconnu !"));
+            UserEntity sender = userRepository.findByEmail(messageDTO.getSender()).orElseThrow(() -> new InvalidUserException("Utilisateur inconnu !"));
+            AgencyEntity agency = agencyRepository.findById(messageDTO.getAgencyId()).orElseThrow(() -> new InvalidAgencyException("Agence inconnue !"));
+            CustomerEntity customer = customerRepository.findById(messageDTO.getCustomerId()).orElseThrow(() -> new InvalidUserException("Client inconnu !"));;
 
-            ChatRoom room = roomRepository.findByRoomId(messageDTO.getRoomId())
-                    .orElseGet(() -> createRoom(messageDTO.getRoomId()));
-
-            ChatMessage message = ChatMessage.builder()
+            MessageEntity message = MessageEntity.builder()
                     .content(messageDTO.getContent())
                     .sender(sender)
-                    .room(room)
+                    .agency(agency)
+                    .customer(customer)
                     .type(MessageType.valueOf(messageDTO.getType()))
                     .timestamp(LocalDateTime.now())
-                    .isRead(false)
                     .build();
 
-            ChatMessage savedMessage = messageRepository.save(message);
+            MessageEntity savedMessage = messageRepository.save(message);
             return convertToDTO(savedMessage);
 
         } catch (Exception e) {
@@ -56,32 +56,24 @@ public class ChatService {
 
     }
 
-    public List<ChatMessageDTO> getMessageHistory(String roomId, int limit) {
-        ChatRoom room = roomRepository.findByRoomId(roomId)
-                .orElseThrow(() -> new RuntimeException("Room non trouvée: " + roomId));
+    public List<ChatMessageDTO> getMessageHistory(int agencyId, int customerId, int limit) throws InvalidAgencyException, InvalidUserException {
 
-        return messageRepository.findByRoomOrderByTimestampDesc(room)
+        AgencyEntity agency = agencyRepository.findById(agencyId).orElseThrow(() -> new InvalidAgencyException("Agence inconnue !"));
+        CustomerEntity customer = customerRepository.findById(customerId).orElseThrow(() -> new InvalidUserException("Client inconnu !"));;
+        return messageRepository.findByAgencyAndCustomerOrderByTimestampDesc(agency,customer)
                 .stream()
                 .limit(limit)
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    private ChatRoom createRoom(String roomId) {
-        ChatRoom room = ChatRoom.builder()
-                .roomId(roomId)
-                .name(roomId)
-                .createdAt(LocalDateTime.now())
-                .build();
-        return roomRepository.save(room);
-    }
-
-    private ChatMessageDTO convertToDTO(ChatMessage message) {
+    private ChatMessageDTO convertToDTO(MessageEntity message) {
         return ChatMessageDTO.builder()
                 .id(message.getId())
                 .content(message.getContent())
-                .sender(message.getSender().getUsername())
-                .roomId(message.getRoom().getRoomId())
+                .sender(message.getSender().getEmail())
+                .agencyId(message.getAgency().getId())
+                .customerId(message.getCustomer().getId())
                 .type(message.getType().name())
                 .timestamp(message.getTimestamp())
                 .build();

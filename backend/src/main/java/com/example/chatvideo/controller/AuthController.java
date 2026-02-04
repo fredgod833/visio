@@ -90,10 +90,6 @@ public class AuthController {
             throw new InvalidRegistrationException("Un compte existe avec cet email ! Veuillez vous logger.");
         }
 
-        if (userRepository.findByUsername(signUpRequest.getUsername()).isPresent()) {
-            throw new InvalidRegistrationException("Ce nom d'utilisateur est déjà pris, veuillez en choisir un autre.");
-        }
-
         if (signUpRequest.getPassword().length() < 7) {
             throw new InvalidRegistrationException("Le mot de passe doit avoir 7 caractères minimum.");
         }
@@ -107,11 +103,12 @@ public class AuthController {
         UserEntity userEntity = new UserEntity();
         userEntity.setEmail(signUpRequest.getEmail());
         userEntity.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
-        userEntity.setUsername(signUpRequest.getUsername());
+        userEntity.setFirstName(signUpRequest.getFirstName());
+        userEntity.setLastName(signUpRequest.getLastName());
 
         userRepository.save(userEntity);
 
-        return authenticate(signUpRequest.getUsername(), signUpRequest.getPassword());
+        return authenticate(signUpRequest.getEmail(), signUpRequest.getPassword());
     }
 
     @GetMapping(value = "/me", produces = APPLICATION_JSON_VALUE)
@@ -158,18 +155,11 @@ public class AuthController {
             }
         }
 
-        // verif d'unicité du nouveau nom utilisateur si il a été modifié
-        if (!userDetails.getUsername().equalsIgnoreCase(updateUserRequest.getUsername())) {
-            // l'email a été modifié, on recherche si il existe un doublon en base
-            if (userRepository.findByUsername(updateUserRequest.getUsername()).isPresent()) {
-                throw new InvalidRegistrationException("Ce nom d'utilisateur est déjà pris, veuillez en choisir un autre.");
-            }
-        }
-
         long userId = userDetails.getId();
         UserEntity user = this.userRepository.findById(userId).orElseThrow(() -> new InvalidRegistrationException("utilisateur non trouvé"));
         user.setEmail(updateUserRequest.getEmail());
-        user.setUsername(updateUserRequest.getUsername());
+        user.setFirstName(updateUserRequest.getFirstName());
+        user.setLastName(updateUserRequest.getLastName());
 
         //TODO: traiter nouveau mot de passe.
         String password = updateUserRequest.getPassword();
@@ -178,7 +168,7 @@ public class AuthController {
             password = updateUserRequest.getNewPassword();
         }
         userRepository.save(user);
-        return authenticate(updateUserRequest.getUsername(), password);
+        return authenticate(updateUserRequest.getEmail(), password);
     }
 
 }

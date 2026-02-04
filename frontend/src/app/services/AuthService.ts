@@ -9,13 +9,15 @@ export interface LoginRequest {
 }
 
 export interface SignupRequest {
-    username: string;
+    firstName: string;
+    lastName: string;
     email: string;
     password: string;
 }
 
 export interface UpdateUserRequest {
-    username: string;
+    firstName: string;
+    lastName: string;
     email: string;
     password: string;
     newPassword?: string;
@@ -71,7 +73,8 @@ export class AuthService {
      */
     register(userData: Omit<any, "confirmPassword">): Observable<JwtResponse> {
         const signupRequest: SignupRequest = {
-            username: userData['username'],
+            firstName: userData['firstName'],
+            lastName: userData['lastName'],
             email: userData['email'],
             password: userData['password']
         };

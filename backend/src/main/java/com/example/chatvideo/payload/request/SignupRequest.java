@@ -12,8 +12,11 @@ public class SignupRequest {
     @Email
     private String email;
 
+    @Size(min = 3, max = 20, message = "Votre prénom doit avoir entre 3 et 20 caratères.")
+    private String firstName;
+
     @Size(min = 3, max = 20, message = "Votre nom doit avoir entre 3 et 20 caratères.")
-    private String username;
+    private String lastName;
 
     @Size(min = 8, max = 20, message = "Votre mot de passe doit avoir entre 8 et 20 caratères.")
     private String password;
