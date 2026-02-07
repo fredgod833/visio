@@ -12,7 +12,7 @@ CREATE TABLE `AGENCY` (
   `updateAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `CAR` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -39,8 +39,8 @@ CREATE TABLE `CAR_BOOKING` (
   `carId` int DEFAULT NULL,
   `pickupAgencyId` int NOT NULL,
   `returnAgencyId` int NOT NULL,
-  `pickUpDate` date NOT NULL,
-  `returnDate` date NOT NULL,
+  `pickUpDate` datetime NOT NULL,
+  `returnDate` datetime NOT NULL,
   `price` decimal(10,2) DEFAULT NULL,
   `createdAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updateAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -94,9 +94,10 @@ CREATE TABLE `MESSAGE` (
   `senderId` int DEFAULT NULL,
   `customerId` int DEFAULT NULL,
   `agencyId` int DEFAULT NULL,
-  `object` varchar(255) DEFAULT NULL,
+  `type` varchar(15) DEFAULT NULL,
   `content` text,
-  `date` date DEFAULT NULL,
+  `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `object` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `customerId` (`customerId`),
   KEY `agencyId` (`agencyId`),
@@ -104,6 +105,20 @@ CREATE TABLE `MESSAGE` (
   CONSTRAINT `MESSAGE_ibfk_1` FOREIGN KEY (`customerId`) REFERENCES `CUSTOMER` (`id`),
   CONSTRAINT `MESSAGE_ibfk_2` FOREIGN KEY (`agencyId`) REFERENCES `AGENCY` (`id`),
   CONSTRAINT `MESSAGE_ibfk_3` FOREIGN KEY (`senderId`) REFERENCES `USER` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `PAYMENT` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `bookingId` int NOT NULL,
+  `type` varchar(8) DEFAULT 'CUSTOMER',
+  `timestamp` timestamp NOT NULL,
+  `status` varchar(50) NOT NULL DEFAULT 'OFFLINE',
+  `transactionCode` varchar(255) DEFAULT NULL,
+  `createdAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updateAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `PAYMENT_ibfk_1` (`bookingId`),
+  CONSTRAINT `PAYMENT_ibfk_1` FOREIGN KEY (`bookingId`) REFERENCES `CAR_BOOKING` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `USER` (
@@ -120,3 +135,4 @@ CREATE TABLE `USER` (
   UNIQUE KEY `email` (`email`),
   UNIQUE KEY `password` (`password`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
