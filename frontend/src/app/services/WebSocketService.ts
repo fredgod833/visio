@@ -169,8 +169,16 @@ export class WebSocketService {
     }));
   }
 
-  disconnect(): void {
+  disconnect(username: string): void {
     if (this.client) {
+      // Envoyer notification de connexion
+      this.sendMessage({
+        sender: username,
+        content: `${username} a quitté le chat`,
+        agencyId: 1,
+        customerId: 1,
+        type: 'LEAVE'
+      });
       this.client.deactivate();
     }
   }

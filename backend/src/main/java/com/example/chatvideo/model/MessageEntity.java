@@ -37,7 +37,7 @@ public class MessageEntity {
     @Builder.Default
     private MessageType type = MessageType.CHAT;
 
-    @Column(name = "date")
+    @Column(name = "timestamp")
     private LocalDateTime timestamp;
 
     @PrePersist

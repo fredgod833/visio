@@ -91,7 +91,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(sub => sub.unsubscribe());
-    this.wsService.disconnect();
+    this.wsService.disconnect(this.username);
     if (this.isVideoCallActive) {
       this.webRTCService.stopCall();
     }
@@ -238,7 +238,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   logout(): void {
     this.authService.logout();
-    this.wsService.disconnect();
+    this.wsService.disconnect(this.username);
     this.router.navigate(['/login']);
   }
 
