@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, signal, NgZone } from '@angular/core';
+import {Component, OnInit, OnDestroy, ViewChild, ElementRef, signal, NgZone, HostListener} from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -90,8 +90,8 @@ export class ChatComponent implements OnInit, OnDestroy {
 
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
     this.wsService.disconnect(this.username);
+    this.subscriptions.forEach(sub => sub.unsubscribe());
     if (this.isVideoCallActive) {
       this.webRTCService.stopCall();
     }
@@ -237,12 +237,23 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   logout(): void {
-    this.authService.logout();
     this.wsService.disconnect(this.username);
+    this.authService.logout();
     this.router.navigate(['/login']);
   }
 
   goToProfile(): void {
     this.router.navigate(['/profile']);
   }
+
+  @HostListener('window:beforeunload')
+  beforeunloadHandler() {
+    this.wsService.disconnect(this.username);
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+    if (this.isVideoCallActive) {
+      this.webRTCService.stopCall();
+    }
+    this.authService.logout();
+  }
+
 }
